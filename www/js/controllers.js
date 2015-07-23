@@ -1,6 +1,6 @@
-angular.module('starter.controllers', [])
+var app = angular.module('healthApp.controllers', []);
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+app.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -53,4 +53,31 @@ angular.module('starter.controllers', [])
 })
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
-});
+})
+
+    .controller('LoginCtrl', function($location, $scope, $stateParams, authService) {
+      $scope.doLogin = function() {
+        var path = "/";
+        console.log('Doing login', $scope.loginData);
+        authService.login($scope.loginData.username, $scope.loginData.password).then(
+            function (status) {
+              //$stateParams.redirect will have the route
+              //they were trying to go to initially
+              if (!status) {
+                //vm.errorMessage = 'Unable to login';
+                return;
+              }
+              if (status && $stateParams && $stateParams.redirect) {
+                path = path + $stateParams.redirect;
+              }
+
+              $location.path(path);
+              $scope.modal.hide();
+
+            }, function(err) {
+              //vm.errorMessage = typeof err === 'string' ? err :
+                //  typeof err !== 'undefined' && err !== null ? err.error_description : 'Unknown error!';
+            });
+
+      };
+    });

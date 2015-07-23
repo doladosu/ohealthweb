@@ -4,9 +4,11 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers'])
+angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controllers'])
 
-.run(function($ionicPlatform) {
+.run(['$rootScope', '$state','authService', '$ionicPlatform', '$ionicModal',
+      function($rootScope, $state, authService, $ionicPlatform, $ionicModal) {
+      authService.fillAuthData();
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -20,7 +22,25 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       StatusBar.styleDefault();
     }
   });
-})
+
+
+      $rootScope.$on("$stateChangeStart", function (event, toState) {
+        // NOTE: All pages are secure by default. Have to specify public pages
+        var isPublicState = toState.public && toState.public === true;
+        var isAuthenticated = authService.user.isAuthenticated;
+        if (isPublicState || isAuthenticated) {
+          return;
+        }
+
+        // Lock down and redirect
+        event.preventDefault();
+        $ionicModal.fromTemplateUrl('templates/login.html', {
+        }).then(function(modal) {
+          modal.show();
+        });
+      });
+
+    }])
 
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
@@ -50,15 +70,32 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     })
     .state('app.playlists', {
-      url: '/playlists',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/playlists.html',
-          controller: 'PlaylistsCtrl'
+        url: '/playlists',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/playlists.html',
+            controller: 'PlaylistsCtrl'
+          }
         }
-      }
-    })
-
+      })
+      .state('app.patients', {
+        url: '/patients',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/patients/patients.html',
+            controller: 'PatientsCtrl'
+          }
+        }
+      })
+      .state('app.patient', {
+        url: '/patients/:patientId',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/patients/patient.html',
+            controller: 'PatientCtrl'
+          }
+        }
+      })
   .state('app.single', {
     url: '/playlists/:playlistId',
     views: {
@@ -69,5 +106,5 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   });
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/playlists');
+  $urlRouterProvider.otherwise('/app/patients');
 });
