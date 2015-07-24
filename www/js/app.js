@@ -7,7 +7,7 @@
 angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controllers'])
 
 .run(['$rootScope', '$state','authService', '$ionicPlatform', '$ionicModal',
-      function($rootScope, $state, authService, $ionicPlatform, $ionicModal) {
+      function($rootScope, $state, authService, $ionicPlatform) {
       authService.fillAuthData();
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -22,34 +22,26 @@ angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controlle
       StatusBar.styleDefault();
     }
   });
-
-
-      $rootScope.$on("$stateChangeStart", function (event, toState) {
-        // NOTE: All pages are secure by default. Have to specify public pages
-        var isPublicState = toState.public && toState.public === true;
-        var isAuthenticated = authService.user.isAuthenticated;
-        if (isPublicState || isAuthenticated) {
-          return;
-        }
-
-        // Lock down and redirect
-        event.preventDefault();
-        $ionicModal.fromTemplateUrl('templates/login.html', {
-        }).then(function(modal) {
-          modal.show();
-        });
-      });
-
     }])
 
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
 
+      .state('login', {
+          url: "/login",
+          templateUrl: "templates/login.html",
+          controller: 'AppCtrl'
+      })
     .state('app', {
     url: '/app',
     abstract: true,
     templateUrl: 'templates/menu.html',
-    controller: 'AppCtrl'
+    controller: 'AppCtrl',
+          onEnter: function($state, authService) {
+              if (!authService.user.isAuthenticated) {
+                  $state.go('login');
+              }
+          }
   })
 
   .state('app.search', {
@@ -106,5 +98,5 @@ angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controlle
     }
   });
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/patients');
+  $urlRouterProvider.otherwise('/login');
 });

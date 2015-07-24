@@ -1,6 +1,6 @@
 var app = angular.module('healthApp.controllers', []);
 
-app.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+app.controller('AppCtrl', function($scope, $ionicModal, $ionicLoading, $state, $stateParams, authService) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -12,32 +12,36 @@ app.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
   // Form data for the login modal
   $scope.loginData = {};
 
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
 
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
+  $scope.logout = function() {
+    authService.logout();
+    $state.go("login");
   };
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
-
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
+    $ionicLoading.show({
+      template: 'Loading...'
+    });
+    var path = "/";
+    authService.login($scope.loginData.username, $scope.loginData.password).then(
+        function (status) {
+          //$stateParams.redirect will have the route
+          //they were trying to go to initially
+          if (!status) {
+            //vm.errorMessage = 'Unable to login';
+            return;
+          }
+          if (status && $stateParams && $stateParams.redirect) {
+            path = path + $stateParams.redirect;
+          }
+          $ionicLoading.hide();
+          $state.go('app.patients');
+        }, function(err) {
+          $ionicLoading.hide();
+          //vm.errorMessage = typeof err === 'string' ? err :
+          //  typeof err !== 'undefined' && err !== null ? err.error_description : 'Unknown error!';
+        });
   };
 })
 
@@ -53,31 +57,4 @@ app.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 })
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
-})
-
-    .controller('LoginCtrl', function($location, $scope, $stateParams, authService) {
-      $scope.doLogin = function() {
-        var path = "/";
-        console.log('Doing login', $scope.loginData);
-        authService.login($scope.loginData.username, $scope.loginData.password).then(
-            function (status) {
-              //$stateParams.redirect will have the route
-              //they were trying to go to initially
-              if (!status) {
-                //vm.errorMessage = 'Unable to login';
-                return;
-              }
-              if (status && $stateParams && $stateParams.redirect) {
-                path = path + $stateParams.redirect;
-              }
-
-              $location.path(path);
-              $scope.modal.hide();
-
-            }, function(err) {
-              //vm.errorMessage = typeof err === 'string' ? err :
-                //  typeof err !== 'undefined' && err !== null ? err.error_description : 'Unknown error!';
-            });
-
-      };
-    });
+});
