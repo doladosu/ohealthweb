@@ -1,8 +1,23 @@
 <ion-view view-title="Patients">
+  <ion-nav-buttons side='secondary'>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="addMember()">Add Member</button>
+    </div>
+  </ion-nav-buttons>
   <ion-content>
+    <div class="list card" ng-if="noPatients">
+      <div class="item item-text-wrap">
+        You have no patient information setup.
+      </div>
+      <a href="#" class="item item-icon-left">
+        <i class="icon ion-person-stalker"></i>
+        Enter patient information
+      </a>
+    </div>
     <ion-list>
-      <ion-item ng-repeat="patient in patients" href="#/app/patients/{{patient.id}}">
+      <ion-item ng-if="!noPatients" ng-repeat="patient in patients" href="#/app/patients/{{patient.id}}">
         {{patient.firstName + ' ' + patient.lastName}}
+        <i class="icon ion-chevron-right"></i>
       </ion-item>
     </ion-list>
   </ion-content>

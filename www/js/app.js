@@ -79,6 +79,15 @@ angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controlle
           }
         }
       })
+      .state('app.addPatient', {
+          url: '/patient/add',
+          views: {
+              'menuContent': {
+                  templateUrl: 'templates/patients/patients.html',
+                  controller: 'PatientsCtrl'
+              }
+          }
+      })
       .state('app.patient', {
         url: '/patients/:patientId',
         views: {
