@@ -96,17 +96,44 @@
         };
 
         factory.forgotPassword = function (userName) {
-            var sUrl = serviceBase + 'api/security/forgotpassword/' + userName;
+            var sUrl = serviceBase + 'account/forgotpassword/' + userName;
             return $http.post(sUrl, userName).then(function (response) {
                 return response.data;
             });
         };
 
         factory.resetPassword = function (data) {
-            var sUrl = serviceBase + 'api/security/resetpassword?id=' + data.Id + '&code=' + data.Code + '&password=' + data.Password;
+            var sUrl = serviceBase + 'account/resetpassword?id=' + data.Id + '&code=' + data.Code + '&password=' + data.Password;
             return $http.post(sUrl, data).then(function (response) {
                 return response.data;
             });
+        };
+
+        factory.register = function (userName, password, confirmpassword) {
+            var data = "email=" + userName + "&password=" + password + "&confirmpassword=" + password ;
+            var deferred = $q.defer();
+
+            $http.post(serviceBase + 'account/register', data, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }).success(function (response) {
+
+                localStorageService.set('authorizationData', {
+                    token: response.access_token,
+                    userName: userName,
+                    roles: response.role,
+                    refreshToken: response.refresh_token,
+                    expires: Date.parse(response['.expires'])
+                });
+                factory.user.isAuthenticated = true;
+                factory.user.userName = userName;
+                factory.user.roles = response.role;
+                $rootScope.$broadcast('loginStatusChanged', true);
+                deferred.resolve(response);
+
+            }).error(function (err, status) {
+                factory.logout();
+                deferred.reject(err);
+            });
+
+            return deferred.promise;
         };
 
         return factory;

@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controllers'])
+angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controllers', 'ngMap'])
 
 .run(['$rootScope', '$state','authService', '$ionicPlatform', '$ionicModal',
       function($rootScope, $state, authService, $ionicPlatform) {
@@ -31,6 +31,16 @@ angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controlle
           url: "/login",
           templateUrl: "templates/login.html",
           controller: 'AppCtrl'
+      })
+      .state('forgotpassword', {
+          url: "/forgot-password",
+          templateUrl: "templates/forgotpassword.html",
+          controller: 'ForgotPasswordCtrl'
+      })
+      .state('signup', {
+          url: "/signup",
+          templateUrl: "templates/signup.html",
+          controller: 'SignupPasswordCtrl'
       })
     .state('app', {
     url: '/app',
@@ -61,15 +71,6 @@ angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controlle
         }
       }
     })
-    .state('app.playlists', {
-        url: '/playlists',
-        views: {
-          'menuContent': {
-            templateUrl: 'templates/playlists.html',
-            controller: 'PlaylistsCtrl'
-          }
-        }
-      })
       .state('app.patients', {
         url: '/patients',
         views: {
@@ -83,8 +84,8 @@ angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controlle
           url: '/patient/add',
           views: {
               'menuContent': {
-                  templateUrl: 'templates/patients/patients.html',
-                  controller: 'PatientsCtrl'
+                  templateUrl: 'templates/patients/addpatient.html',
+                  controller: 'AddPatientCtrl'
               }
           }
       })
@@ -96,16 +97,7 @@ angular.module('healthApp', ['ionic', 'LocalStorageModule', 'healthApp.controlle
             controller: 'PatientCtrl'
           }
         }
-      })
-  .state('app.single', {
-    url: '/playlists/:playlistId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/playlist.html',
-        controller: 'PlaylistCtrl'
-      }
-    }
-  });
+      });
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/login');
 });

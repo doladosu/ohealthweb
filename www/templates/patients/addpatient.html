@@ -1,0 +1,40 @@
+<ion-header-bar>
+  <h1 class="title">Add Patient</h1>
+</ion-header-bar>
+<ion-content>
+  <form ng-submit="addPatient()">
+    <div class="list list-insert">
+      <label class="item item-input">
+        <input type="email" ng-model="loginData.firstName" placeholder="First name">
+      </label>
+      <label class="item item-input">
+        <input type="text" ng-model="loginData.lastName" placeholder="Last Name">
+      </label>
+      <label class="item item-input">
+        <input type="text" ng-model="loginData.sex" placeholder="Gender">
+      </label>
+      <label class="item item-input">
+        <input type="text" ng-model="loginData.address1" placeholder="Address1">
+      </label>
+      <label class="item item-input">
+        <input type="text" ng-model="loginData.address2" placeholder="Address2">
+      </label>
+      <label class="item item-input">
+        <input type="text" ng-model="loginData.city" placeholder="City">
+      </label>
+      <label class="item item-input">
+        <input type="text" ng-model="loginData.state" placeholder="State">
+      </label>
+      <label class="item item-input">
+        <input type="text" ng-model="loginData.zip" placeholder="Zip code">
+      </label>
+      <label class="item item-input">
+        <input type="text" ng-model="loginData.phone" placeholder="Phone number">
+      </label>
+    </div>
+    <div class="padding">
+      <button class="button button-block button-positive" type="submit">Add Patient</button>
+    </div>
+  </form>
+</ion-content>
+

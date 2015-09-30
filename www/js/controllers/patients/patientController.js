@@ -1,4 +1,5 @@
-app.controller('PatientCtrl',['$scope', '$stateParams', 'patientsService', function($scope, $stateParams, patientsService) {
+app.controller('PatientCtrl',['$scope', '$stateParams', '$compile', 'patientsService',
+    function($scope, $stateParams, $compile, patientsService) {
     $scope.patient = [];
 
 
